@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ListPreference
+        android:defaultValue="100"
+        android:dialogTitle="Set the refresh rate"
+        android:entries="@array/intervals"
+        android:entryValues="@array/interval_values"
+        android:key="interval"
+        android:summary="Click to modify the refresh rate"
+        android:title="Refresh rate" />
+    <ListPreference
+        android:defaultValue="1"
+        android:dialogTitle="Set the precision"
+        android:entries="@array/precision"
+        android:entryValues="@array/precision_values"
+        android:key="precision"
+        android:summary="Click to modify the decimal places of the sensor values"
+        android:title="Precision" />
+</PreferenceScreen>
