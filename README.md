@@ -23,7 +23,9 @@ Android (playground) project to explore:
 - ...
 
 ### TODOs
-- introduce gradle / get rid of eclipes files
+- find out why suddenly the startup of the overview activity has becoming so terribly slow
+- fix "missing" sensors (since android 4.3 ?)
+- select one overview implementation as startup screen
 - use TimerTask (..) iso plain sleeps for refreshing the sensor values
 - extend (basic) implementation of the sensor details activity
 - ...
