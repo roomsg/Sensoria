@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.grocs.sensors.common.AbstractSensorDataManager;
 import com.grocs.sensors.common.AllSensorDataManager;
 import com.grocs.sensors.common.ISensorData;
+import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorConstants;
 import com.grocs.sensors.common.SensorDataManagerListener;
 import com.grocs.sensors.common.SensorEntry1;
@@ -236,14 +237,16 @@ public class Activity1 extends ListActivity implements
 
   private SensorEntry1[] createEntries(ISensorData[] datae) {
     Set<SensorEntry1> entries = new HashSet<SensorEntry1>();
-    Set<Integer> types = new HashSet<Integer>();
+    Set<ISensorDescription> types = new HashSet<ISensorDescription>();
     for (ISensorData data : datae) {
       entries.add(new SensorEntry1(data));
-      types.add(data.getSensor().getType());
+      types.add(SensorUtilsInt.getDescription(data.getSensor().getType()));
     }
-    for (Integer type : types) {
-      entries.add(new SensorEntry1(SensorUtilsInt.getDescription(type)));
+    Log.i(TAG, "typeEntries: " + types);
+    for (ISensorDescription descr : types) {
+      entries.add(new SensorEntry1(descr));
     }
+    Log.i(TAG, "sensorEntries: " + entries);
     return entries.toArray(new SensorEntry1[entries.size()]);
   }
 }

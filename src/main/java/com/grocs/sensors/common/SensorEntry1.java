@@ -29,4 +29,8 @@ public class SensorEntry1 {
   public ISensorDescription getSensorDescription() {
     return fDescription;
   }
+
+  public String toString() {
+    return "data:" + fData + ", description:" + fDescription;
+  }
 }

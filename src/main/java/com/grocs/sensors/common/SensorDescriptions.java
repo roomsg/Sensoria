@@ -3,16 +3,19 @@ package com.grocs.sensors.common;
 import static android.hardware.Sensor.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import android.util.SparseArray;
 
-/*
+/**
  * TODO - get this info from resources ?
  */
 class SensorDescriptions {
-  static final int TYPE_UNKNOWN = -2;
-  static final Desc UNKNOWN = new Desc(TYPE_UNKNOWN, SSD.UNKNOWN, SUD.UNKNOWN,
+  private static final int TYPE_UNKNOWN = -2;
+  static final Desc UNKNOWN = new Desc(SSD.UNKNOWN, SUD.UNKNOWN,
       SVD.UNKNOWN);
 
   // Short Sensor Descriptions
@@ -25,11 +28,11 @@ class SensorDescriptions {
     String MAGN = "Magnetic field";
     String ORIENT = "Orientation";
     String PRESS = "Pressure";
-    String PROX = "Proximity";
-    String ROTAT = "Rotation vector";
+    String PROXIMITY = "Proximity";
+    String ROTATION = "Rotation vector";
     String TEMP = "Temperature";
     String ATEMP = "Ambient temperature";
-    String REL_HUMID = "Relative Humidity";
+    String REL_HUM = "Relative Humidity";
     String MOTION = "Motion";
     String STEP_DETECT = "Step Detect";
     String STEP_COUNT = "Step Count";
@@ -38,6 +41,9 @@ class SensorDescriptions {
 
   // Sensor Unit Descriptions
   private interface SUD {
+    String EMPTY = "";
+    String UNKNOWN = "Unknown";
+    //
     String ACCEL = "m/s2";
     String LIN_ACCEL = ACCEL;
     String GRAV = ACCEL;
@@ -46,20 +52,19 @@ class SensorDescriptions {
     String MAGN = "μT";
     String ORIENT = "°";
     String PRESS = "mbar";
-    String PROX = "cm";
-    String ROTAT = "";
+    String PROXIMITY = "cm";
+    String ROTATION = EMPTY;
     String TEMP = "°C";
     String ATEMP = TEMP;
-    String REL_HUMID = "%";
+    String REL_HUM = "%";
     String COUNT = "nr";
-    String UNKNOWN = "Unknown";
   }
 
   // Sensor Value Descriptions
   private interface SVD {
     String[] GEN_3AXIS = new String[] { "X-Axis", "Y-Axis", "Z-Axis" };
     String[] LIGHT = new String[] { "Ambient light level" };
-    String[] PROX = new String[] { "Distance" };
+    String[] PROXIMITY = new String[] { "Distance" };
     String[] PRESS = new String[] { "Atmospheric Pressure" };
     String[] HUM = new String[] { "Relative ambient air humidity" };
     String[] TEMP = new String[] { "Ambient temperature" };
@@ -68,79 +73,89 @@ class SensorDescriptions {
     String[] NUMBER = new String[] { "Amount" };
   }
 
-  // private static final Map<Integer, ISensorDescription> fDescriptions;
-  private static final SparseArray<ISensorDescription> fDescriptions;
+  // Sensor Full Descriptions
+  private interface SFD {
+    ISensorDescription UNKNOWN        = new Desc(SSD.UNKNOWN, SUD.UNKNOWN, SVD.UNKNOWN);
+    ISensorDescription ACCEL          = new Desc(SSD.ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
+    ISensorDescription LIN_ACCEL      = new Desc(SSD.LIN_ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
+    ISensorDescription ATEMP          = new Desc(SSD.ATEMP, SUD.TEMP, SVD.TEMP);
+    ISensorDescription LIGHT          = new Desc(SSD.LIGHT, SUD.LIGHT, SVD.LIGHT);
+    ISensorDescription MAGN           = new Desc(SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS);
+    ISensorDescription ORIENT         = new Desc(SSD.ORIENT, SUD.ORIENT, SVD.ORIENT);
+    ISensorDescription PROXIMITY      = new Desc(SSD.PROXIMITY, SUD.PROXIMITY, SVD.PROXIMITY);
+    ISensorDescription PRESS          = new Desc(SSD.PRESS, SUD.PRESS, SVD.PRESS);
+    ISensorDescription ROTATION       = new Desc(SSD.ROTATION, SUD.ROTATION, SVD.GEN_3AXIS);
+//    ISensorDescription HUM            = new Desc(SSD.HUM, SUD.HUM, SVD.HUM);
+    ISensorDescription REL_HUMIDITY   = new Desc(SSD.REL_HUM, SUD.REL_HUM, SVD.HUM);
+    ISensorDescription TEMP           = new Desc(SSD.TEMP, SUD.TEMP, SVD.TEMP);
+    ISensorDescription GRAV           = new Desc(SSD.GRAV, SUD.GRAV, SVD.GEN_3AXIS);
+    ISensorDescription GYRO           = new Desc(SSD.GYR, SUD.GYR, SVD.GEN_3AXIS);
+    ISensorDescription MOTION         = new Desc(SSD.MOTION, SUD.UNKNOWN, SVD.UNKNOWN);
+    ISensorDescription STEP_NUMBER    = new Desc(SSD.STEP_COUNT, SUD.COUNT, SVD.NUMBER);
+    ISensorDescription STEP_DETECT    = new Desc(SSD.STEP_DETECT, SUD.UNKNOWN, SVD.NUMBER);
+  }
+
+  private static final SparseArray<ISensorDescription> descriptionMap;
+  private static final ISensorDescription[] descriptions;
 
   static {
-    List<Desc> descs = new ArrayList<Desc>();
-    descs
-        .add(new Desc(TYPE_ACCELEROMETER, SSD.ACCEL, SUD.ACCEL, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_LIGHT, SSD.LIGHT, SUD.LIGHT, SVD.LIGHT));
-    descs.add(new Desc(TYPE_MAGNETIC_FIELD, SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_ORIENTATION, SSD.ORIENT, SUD.ORIENT, SVD.ORIENT));
-    descs.add(new Desc(TYPE_PROXIMITY, SSD.PROX, SUD.PROX, SVD.PROX));
-    descs.add(new Desc(TYPE_TEMPERATURE, SSD.TEMP, SUD.TEMP, SVD.TEMP));
-    descs.add(new Desc(TYPE_GRAVITY, SSD.GRAV, SUD.GRAV, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_GYROSCOPE, SSD.GYR, SUD.GYR, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_LINEAR_ACCELERATION, SSD.LIN_ACCEL, SUD.LIN_ACCEL,
-        SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_PRESSURE, SSD.PRESS, SUD.PRESS, SVD.PRESS));
-    descs.add(new Desc(TYPE_ROTATION_VECTOR, SSD.ROTAT, SUD.ROTAT,
-        SVD.GEN_3AXIS));
-    descs
-        .add(new Desc(TYPE_AMBIENT_TEMPERATURE, SSD.ATEMP, SUD.ATEMP, SVD.TEMP));
-    descs.add(new Desc(TYPE_RELATIVE_HUMIDITY, SSD.REL_HUMID, SUD.REL_HUMID,
-        SVD.HUM));
-    // From API18
-    descs.add(new Desc(TYPE_GAME_ROTATION_VECTOR, SSD.ROTAT, SUD.ROTAT, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_GYROSCOPE_UNCALIBRATED, SSD.GYR, SUD.GYR, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_MAGNETIC_FIELD_UNCALIBRATED, SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_SIGNIFICANT_MOTION, SSD.MOTION, SUD.UNKNOWN, SVD.UNKNOWN));
-    // From API19
-    descs.add(new Desc(TYPE_GEOMAGNETIC_ROTATION_VECTOR, SSD.ROTAT, SUD.ROTAT, SVD.GEN_3AXIS));
-    descs.add(new Desc(TYPE_STEP_COUNTER, SSD.STEP_COUNT, SUD.COUNT, SVD.NUMBER));
-    descs.add(new Desc(TYPE_STEP_DETECTOR, SSD.STEP_DETECT, SUD.UNKNOWN, SVD.UNKNOWN));
+    descriptionMap = new SparseArray<ISensorDescription>();
+    descriptionMap.put(TYPE_UNKNOWN, SFD.UNKNOWN);
     //
-    descs.add(new Desc(TYPE_UNKNOWN, SSD.UNKNOWN, SUD.UNKNOWN, SVD.UNKNOWN));
-
-    // fDescriptions = new HashMap<Integer, ISensorDescription>();
-    fDescriptions = new SparseArray<ISensorDescription>();
-    for (Desc desc : descs) {
-      fDescriptions.put(desc.fType, desc);
+    descriptionMap.put(TYPE_ACCELEROMETER, SFD.ACCEL);
+    descriptionMap.put(TYPE_LIGHT, SFD.LIGHT);
+    descriptionMap.put(TYPE_MAGNETIC_FIELD, SFD.MAGN);
+    descriptionMap.put(TYPE_ORIENTATION, SFD.ORIENT);
+    descriptionMap.put(TYPE_PROXIMITY, SFD.PROXIMITY);
+    descriptionMap.put(TYPE_TEMPERATURE, SFD.TEMP);
+    descriptionMap.put(TYPE_GRAVITY, SFD.GRAV);
+    descriptionMap.put(TYPE_GYROSCOPE, SFD.GYRO);
+    descriptionMap.put(TYPE_LINEAR_ACCELERATION, SFD.ACCEL);
+    descriptionMap.put(TYPE_PRESSURE, SFD.PRESS);
+    descriptionMap.put(TYPE_ROTATION_VECTOR, SFD.ROTATION);
+    descriptionMap.put(TYPE_AMBIENT_TEMPERATURE, SFD.ATEMP);
+    descriptionMap.put(TYPE_RELATIVE_HUMIDITY, SFD.REL_HUMIDITY);
+    // From API-18
+    descriptionMap.put(TYPE_GAME_ROTATION_VECTOR, SFD.ROTATION);
+    descriptionMap.put(TYPE_GYROSCOPE_UNCALIBRATED, SFD.GYRO);
+    descriptionMap.put(TYPE_MAGNETIC_FIELD_UNCALIBRATED, SFD.MAGN);
+    descriptionMap.put(TYPE_SIGNIFICANT_MOTION, SFD.MOTION);
+    // From API-19
+    descriptionMap.put(TYPE_GEOMAGNETIC_ROTATION_VECTOR, SFD.ROTATION);
+    descriptionMap.put(TYPE_STEP_COUNTER, SFD.STEP_NUMBER);
+    descriptionMap.put(TYPE_STEP_DETECTOR, SFD.STEP_DETECT);
+    
+    Set<ISensorDescription> descs = new HashSet<ISensorDescription>();
+    for (int i = 0; i < descriptionMap.size(); ++i) {
+      descs.add(descriptionMap.valueAt(i));
     }
+    descriptions = descs.toArray(new ISensorDescription[descs.size()]);
   }
 
   public static ISensorDescription getDescription(final int type) {
-    final ISensorDescription res = fDescriptions.get(type);
-    return (null != res ? res : ISensorDescription.UNKNOWN);
+    final ISensorDescription res = descriptionMap.get(type);
+    return (null != res ? res : SFD.UNKNOWN);
   }
 
   public static ISensorDescription[] getDescriptions() {
-    final int size = fDescriptions.size();
-    ISensorDescription[] res = new ISensorDescription[size];
-    for (int i = 0; i < size; ++i) {
-      res[i] = fDescriptions.valueAt(i);
-    }
-    return res;
+    return descriptions;
   }
 }
 
 class Desc implements ISensorDescription {
-  final int fType;
-  final String fName;
-  final String fUnit;
-  final String[] fValueDescriptions;
+  private final String fTypeName;
+  private final String fUnit;
+  private final String[] fValueDescriptions;
 
-  Desc(int type, String name, String unit, String[] valueDescriptions) {
-    fType = type;
-    fName = name;
+  Desc(String name, String unit, String[] valueDescriptions) {
+    fTypeName = name;
     fUnit = unit;
     fValueDescriptions = valueDescriptions;
   }
 
   @Override
   public String getType() {
-    return fName;
+    return fTypeName;
   }
 
   @Override
@@ -151,5 +166,10 @@ class Desc implements ISensorDescription {
   @Override
   public String[] getValueDescriptions() {
     return fValueDescriptions;
+  }
+  
+  @Override
+  public String toString() {
+    return "typeName:" + fTypeName + ", unit:" + fUnit + ", descriptions:" + Arrays.toString(fValueDescriptions);
   }
 }

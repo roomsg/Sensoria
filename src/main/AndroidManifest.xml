@@ -1,13 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.grocs.sensors"
-    android:versionCode="1"
-    android:versionName="1.1" >
+    package="com.grocs.sensors" >
     <!-- for debug purposes only -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="17" />
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
@@ -15,14 +10,15 @@
         android:theme="@android:style/Theme.Holo"
         tools:ignore="NewApi" >
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity1"
             android:label="@string/title_activity_overview" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
+        <!--
+        activity
             android:name=".Activity0"
             android:label="@string/title_activity_overview" >
         </activity>
@@ -33,7 +29,8 @@
         <activity
             android:name="com.grocs.sensors.ActivityDetail0"
             android:label="@string/title_activity_sensor_detail" >
-        </activity>
+        </activity
+        -->
         <activity
             android:name="com.grocs.sensors.ActivityDetail1"
             android:label="@string/title_activity_sensor_detail" >
