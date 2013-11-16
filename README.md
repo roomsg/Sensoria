@@ -1,9 +1,14 @@
 Sensoria
 ========
 
-## What's in it for the end-user ?
-End-user gets an overview of all the available sensors and their actual values in a single activity.
-Other apps in the playstore only seem to show values for a (single) sensor at the time ?!
+## Description
+Have you ever been wondering (as end user or Android dvelopper) about the following questions:
+- which (type of) sensors are available at your device ?
+- which are there values and how do they (possibly) correlate ?
+- in case there are multiple sensors available for a given type:
+-- which sensor is the default ?
+-- what are the differences between the different sensors ?
+Other apps in the playstore are not really helping (AFAIK), since they only seem to show values for a (single) sensor at the time ?!
 
 ## What's in it for me (as a developer) ?
 Android (playground) project to explore:
