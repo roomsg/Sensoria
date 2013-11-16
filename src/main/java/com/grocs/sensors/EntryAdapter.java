@@ -16,9 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.grocs.sensors.common.ISensorData;
-import com.grocs.sensors.common.SensorEntry1;
+import com.grocs.sensors.common.SensorEntry;
 
-public class EntryAdapter1 extends ArrayAdapter<SensorEntry1> implements
+public class EntryAdapter extends ArrayAdapter<SensorEntry> implements
     OnSharedPreferenceChangeListener {
   private static final int ITEM_TYPE_SECTION = 0;
   private static final int ITEM_TYPE_SENSOR = 1;
@@ -38,7 +38,7 @@ public class EntryAdapter1 extends ArrayAdapter<SensorEntry1> implements
    *          .getSensors()
    * @param fSM
    */
-  public EntryAdapter1(Context context, SensorEntry1[] fEntries) {
+  public EntryAdapter(Context context, SensorEntry[] fEntries) {
     super(context, 0, fEntries);
     // get the prefs / register ourselves as listener
     fPrefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -50,7 +50,7 @@ public class EntryAdapter1 extends ArrayAdapter<SensorEntry1> implements
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    final SensorEntry1 sensorEntry = getItem(position);
+    final SensorEntry sensorEntry = getItem(position);
     final int type = getItemViewType(position);
     View row = convertView;
     if (null == row) {

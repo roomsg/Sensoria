@@ -1,15 +1,15 @@
 package com.grocs.sensors.common;
 
-public class SensorEntry1 {
+public class SensorEntry {
   private final ISensorData fData;
   private final ISensorDescription fDescription;
 
-  public SensorEntry1(ISensorData data) {
+  public SensorEntry(ISensorData data) {
     fData = data;
     fDescription = data.getDescription();
   }
 
-  public SensorEntry1(ISensorDescription description) {
+  public SensorEntry(ISensorDescription description) {
     fData = null;
     fDescription = description;
   }

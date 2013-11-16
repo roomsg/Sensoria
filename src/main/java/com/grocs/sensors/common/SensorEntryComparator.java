@@ -2,9 +2,9 @@ package com.grocs.sensors.common;
 
 import java.util.Comparator;
 
-public class SensorEntryComparator implements Comparator<SensorEntry1> {
+public class SensorEntryComparator implements Comparator<SensorEntry> {
   @Override
-  public int compare(SensorEntry1 lhs, SensorEntry1 rhs) {
+  public int compare(SensorEntry lhs, SensorEntry rhs) {
     // 1. sort based on type
     final String type1 = retrieveType(lhs);
     final String type2 = retrieveType(rhs);
@@ -33,7 +33,7 @@ public class SensorEntryComparator implements Comparator<SensorEntry1> {
     return 0;
   }
 
-  private String retrieveType(SensorEntry1 lhs) {
+  private String retrieveType(SensorEntry lhs) {
     return lhs.isSection() ? lhs.getName() : lhs.getSensorData()
         .getDescription().getType();
   }

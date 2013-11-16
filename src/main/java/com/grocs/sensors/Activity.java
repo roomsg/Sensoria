@@ -5,6 +5,8 @@ import static com.grocs.sensors.common.SensorConstants.PROP_PRECISION;
 import static com.grocs.sensors.common.SensorConstants.PROP_SENSOR_NAME;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -22,24 +24,28 @@ import android.widget.TextView;
 import com.grocs.sensors.common.AbstractSensorDataManager;
 import com.grocs.sensors.common.AllSensorDataManager;
 import com.grocs.sensors.common.ISensorData;
+import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorConstants;
-import com.grocs.sensors.common.SensorDataComparator;
 import com.grocs.sensors.common.SensorDataManagerListener;
+import com.grocs.sensors.common.SensorEntry;
+import com.grocs.sensors.common.SensorEntryComparator;
+import com.grocs.sensors.common.SensorUtilsInt;
 
 /**
  */
-public class Activity0 extends ListActivity implements
+public class Activity extends ListActivity implements
     SensorDataManagerListener {
+  private static final boolean TRACE = false;
   private final String TAG = this.getClass().getSimpleName();
   private final int MENU_PREFS = 666;
   //
   private AbstractSensorDataManager fSM;
   // List adapter
-  private EntryAdapter0 fAdapter;
+  private EntryAdapter fAdapter;
   // Activity preferences
   private SharedPreferences fPrefs;
   /** array containing all sensorData */
-  ISensorData[] fData;
+  SensorEntry[] fEntries;
   /** bitmap used to track the sensor(indices) that need to be refreshed. */
   boolean[] fRefreshMatrix;
   /** array containing string representations of all sensorData */
@@ -61,17 +67,20 @@ public class Activity0 extends ListActivity implements
     // create our model object
     fSM = new AllSensorDataManager(
         (SensorManager) getSystemService(SENSOR_SERVICE));
-    fData = fSM.getSensors();
+    fEntries = createEntries(fSM.getSensors());
     // create the adapter
-    fAdapter = new EntryAdapter0(this, R.layout.sensor_row0, fSM);
+    fAdapter = new EntryAdapter(this, fEntries);
     // sort the adapter: first by type, then by name
-    fAdapter.sort(new SensorDataComparator());
+    fAdapter.sort(new SensorEntryComparator());
     // set the adapter (once !)
     setListAdapter(fAdapter);
     // init our other class members
     fRefreshMatrix = new boolean[fAdapter.getCount()];
     fStringValues = createStringValues();
     fFinalStringValues = new String[fAdapter.getCount()];
+    // for test
+    if (TRACE)
+      android.os.Debug.startMethodTracing(TAG);
   }
 
   @Override
@@ -104,7 +113,9 @@ public class Activity0 extends ListActivity implements
 
   @Override
   protected void onDestroy() {
-    Log.i(TAG, "onDestroy");
+    // Log.i(TAG, "onDestroy");
+    if (TRACE)
+      android.os.Debug.stopMethodTracing();
     super.onDestroy();
   }
 
@@ -134,13 +145,16 @@ public class Activity0 extends ListActivity implements
   @Override
   protected void onListItemClick(ListView l, View v, int position, long id) {
     // fetch and prepare data
-    final ISensorData data = fAdapter.getItem(position);
-    final Bundle bundle = new Bundle();
-    bundle.putString(PROP_SENSOR_NAME, data.getSensor().getName());
-    // create and sent intent
-    final Intent intent = new Intent(this, ActivityDetail0.class);
-    intent.putExtras(bundle);
-    startActivity(intent);
+    final SensorEntry entry = fAdapter.getItem(position);
+    if (!entry.isSection()) {
+      final Bundle bundle = new Bundle();
+      bundle.putString(PROP_SENSOR_NAME, entry.getSensorData().getSensor()
+          .getName());
+      // create and sent intent
+      final Intent intent = new Intent(this, ActivityDetail.class);
+      intent.putExtras(bundle);
+      startActivity(intent);
+    }
   }
 
   /***
@@ -148,6 +162,7 @@ public class Activity0 extends ListActivity implements
    ***/
   @Override
   public void onUpdate(ISensorData[] data) {
+    // Log.i(TAG, "onUpdate: " + data);
     final int first = fListView.getFirstVisiblePosition();
     final int last = fListView.getLastVisiblePosition();
     //
@@ -181,17 +196,19 @@ public class Activity0 extends ListActivity implements
     final int count = fAdapter.getCount();
     final String[][] res = new String[count][];
     for (int i = 0; i < count; ++i) {
-      final ISensorData data = fAdapter.getItem(i);
-      res[i] = new String[getNrOfExpectedValues(data)];
+      final SensorEntry entry = fAdapter.getItem(i);
+      if (!entry.isSection()) {
+        res[i] = new String[getNrOfExpectedValues(entry.getSensorData())];
+      }
     }
     return res;
   }
 
   private void updateRefreshMatrix(ISensorData[] data, int start, int stop) {
     Arrays.fill(fRefreshMatrix, false);
-    for (int i = 0; i < fData.length; ++i) {
+    for (int i = 0; i < fEntries.length; ++i) {
       for (int j = 0; j < data.length; ++j) {
-        if (fData[i].equals(data[j])) {
+        if (data[j].equals(fEntries[i].getSensorData())) {
           if ((i >= start) && (i <= stop)) {
             fRefreshMatrix[i] = true;
           }
@@ -204,8 +221,8 @@ public class Activity0 extends ListActivity implements
   private void updateStrValues() {
     for (int i = 0; i < fRefreshMatrix.length; ++i) {
       if (true == fRefreshMatrix[i]) {
-        final ISensorData data = fAdapter.getItem(i);
-        final float[] values = data.getValues();
+        final SensorEntry entry = fAdapter.getItem(i);
+        final float[] values = entry.getSensorData().getValues();
         for (int j = 0; j < fStringValues[i].length; ++j) {
           fStringValues[i][j] = fFormatter.doConvert(values[j]);
         }
@@ -216,5 +233,20 @@ public class Activity0 extends ListActivity implements
 
   private int getNrOfExpectedValues(ISensorData data) {
     return data.getDescription().getValueDescriptions().length;
+  }
+
+  private SensorEntry[] createEntries(ISensorData[] datae) {
+    Set<SensorEntry> entries = new HashSet<SensorEntry>();
+    Set<ISensorDescription> types = new HashSet<ISensorDescription>();
+    // add individual sensors
+    for (ISensorData data : datae) {
+      entries.add(new SensorEntry(data));
+      types.add(SensorUtilsInt.getDescription(data.getSensor().getType()));
+    }
+    // add sensor types (no duplicates)
+    for (ISensorDescription descr : types) {
+      entries.add(new SensorEntry(descr));
+    }
+    return entries.toArray(new SensorEntry[entries.size()]);
   }
 }

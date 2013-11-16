@@ -10,29 +10,15 @@
         android:theme="@android:style/Theme.Holo"
         tools:ignore="NewApi" >
         <activity
-            android:name=".Activity1"
+            android:name=".Activity"
             android:label="@string/title_activity_overview" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--
-        activity
-            android:name=".Activity0"
-            android:label="@string/title_activity_overview" >
-        </activity>
         <activity
-            android:name=".Activity1"
-            android:label="@string/title_activity_overview" >
-        </activity>
-        <activity
-            android:name="com.grocs.sensors.ActivityDetail0"
-            android:label="@string/title_activity_sensor_detail" >
-        </activity
-        -->
-        <activity
-            android:name="com.grocs.sensors.ActivityDetail1"
+            android:name="com.grocs.sensors.ActivityDetail"
             android:label="@string/title_activity_sensor_detail" >
         </activity>
         <activity

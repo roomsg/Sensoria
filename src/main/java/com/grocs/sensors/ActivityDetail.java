@@ -18,7 +18,7 @@ import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorUtilsInt;
 import com.grocs.sensors.common.SingleSensorDataManager;
 
-public class ActivityDetail1 extends ListActivity {
+public class ActivityDetail extends ListActivity {
   private static final boolean TRACE = false;
   private final String TAG = this.getClass().getSimpleName();
   private final int MENU_PREFS = 666;
