@@ -2,9 +2,7 @@ package com.grocs.sensors.common;
 
 import static android.hardware.Sensor.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -15,7 +13,7 @@ import android.util.SparseArray;
  */
 class SensorDescriptions {
   private static final int TYPE_UNKNOWN = -2;
-  static final Desc UNKNOWN = new Desc(SSD.UNKNOWN, SUD.UNKNOWN,
+  static final SensorDescription UNKNOWN = new SensorDescription(SSD.UNKNOWN, SUD.UNKNOWN,
       SVD.UNKNOWN);
 
   // Short Sensor Descriptions
@@ -75,24 +73,24 @@ class SensorDescriptions {
 
   // Sensor Full Descriptions
   private interface SFD {
-    ISensorDescription UNKNOWN        = new Desc(SSD.UNKNOWN, SUD.UNKNOWN, SVD.UNKNOWN);
-    ISensorDescription ACCEL          = new Desc(SSD.ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
-    ISensorDescription LIN_ACCEL      = new Desc(SSD.LIN_ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
-    ISensorDescription ATEMP          = new Desc(SSD.ATEMP, SUD.TEMP, SVD.TEMP);
-    ISensorDescription LIGHT          = new Desc(SSD.LIGHT, SUD.LIGHT, SVD.LIGHT);
-    ISensorDescription MAGN           = new Desc(SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS);
-    ISensorDescription ORIENT         = new Desc(SSD.ORIENT, SUD.ORIENT, SVD.ORIENT);
-    ISensorDescription PROXIMITY      = new Desc(SSD.PROXIMITY, SUD.PROXIMITY, SVD.PROXIMITY);
-    ISensorDescription PRESS          = new Desc(SSD.PRESS, SUD.PRESS, SVD.PRESS);
-    ISensorDescription ROTATION       = new Desc(SSD.ROTATION, SUD.ROTATION, SVD.GEN_3AXIS);
-//    ISensorDescription HUM            = new Desc(SSD.HUM, SUD.HUM, SVD.HUM);
-    ISensorDescription REL_HUMIDITY   = new Desc(SSD.REL_HUM, SUD.REL_HUM, SVD.HUM);
-    ISensorDescription TEMP           = new Desc(SSD.TEMP, SUD.TEMP, SVD.TEMP);
-    ISensorDescription GRAV           = new Desc(SSD.GRAV, SUD.GRAV, SVD.GEN_3AXIS);
-    ISensorDescription GYRO           = new Desc(SSD.GYR, SUD.GYR, SVD.GEN_3AXIS);
-    ISensorDescription MOTION         = new Desc(SSD.MOTION, SUD.UNKNOWN, SVD.UNKNOWN);
-    ISensorDescription STEP_NUMBER    = new Desc(SSD.STEP_COUNT, SUD.COUNT, SVD.NUMBER);
-    ISensorDescription STEP_DETECT    = new Desc(SSD.STEP_DETECT, SUD.UNKNOWN, SVD.NUMBER);
+    ISensorDescription UNKNOWN        = new SensorDescription(SSD.UNKNOWN, SUD.UNKNOWN, SVD.UNKNOWN);
+    ISensorDescription ACCEL          = new SensorDescription(SSD.ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
+    ISensorDescription LIN_ACCEL      = new SensorDescription(SSD.LIN_ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
+    ISensorDescription ATEMP          = new SensorDescription(SSD.ATEMP, SUD.TEMP, SVD.TEMP);
+    ISensorDescription LIGHT          = new SensorDescription(SSD.LIGHT, SUD.LIGHT, SVD.LIGHT);
+    ISensorDescription MAGN           = new SensorDescription(SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS);
+    ISensorDescription ORIENT         = new SensorDescription(SSD.ORIENT, SUD.ORIENT, SVD.ORIENT);
+    ISensorDescription PROXIMITY      = new SensorDescription(SSD.PROXIMITY, SUD.PROXIMITY, SVD.PROXIMITY);
+    ISensorDescription PRESS          = new SensorDescription(SSD.PRESS, SUD.PRESS, SVD.PRESS);
+    ISensorDescription ROTATION       = new SensorDescription(SSD.ROTATION, SUD.ROTATION, SVD.GEN_3AXIS);
+//    ISensorDescription HUM            = new SensorDescription(SSD.HUM, SUD.HUM, SVD.HUM);
+    ISensorDescription REL_HUMIDITY   = new SensorDescription(SSD.REL_HUM, SUD.REL_HUM, SVD.HUM);
+    ISensorDescription TEMP           = new SensorDescription(SSD.TEMP, SUD.TEMP, SVD.TEMP);
+    ISensorDescription GRAV           = new SensorDescription(SSD.GRAV, SUD.GRAV, SVD.GEN_3AXIS);
+    ISensorDescription GYRO           = new SensorDescription(SSD.GYR, SUD.GYR, SVD.GEN_3AXIS);
+    ISensorDescription MOTION         = new SensorDescription(SSD.MOTION, SUD.UNKNOWN, SVD.UNKNOWN);
+    ISensorDescription STEP_NUMBER    = new SensorDescription(SSD.STEP_COUNT, SUD.COUNT, SVD.NUMBER);
+    ISensorDescription STEP_DETECT    = new SensorDescription(SSD.STEP_DETECT, SUD.UNKNOWN, SVD.NUMBER);
   }
 
   private static final SparseArray<ISensorDescription> descriptionMap;
@@ -142,34 +140,39 @@ class SensorDescriptions {
   }
 }
 
-class Desc implements ISensorDescription {
-  private final String fTypeName;
-  private final String fUnit;
-  private final String[] fValueDescriptions;
+class SensorDescription implements ISensorDescription {
+  private final String typeName;
+  private final String unit;
+  private final String[] valueDescriptions;
 
-  Desc(String name, String unit, String[] valueDescriptions) {
-    fTypeName = name;
-    fUnit = unit;
-    fValueDescriptions = valueDescriptions;
+  SensorDescription(String typeName, String unit, String[] valueDescriptions) {
+    this.typeName = typeName;
+    this.unit = unit;
+    this.valueDescriptions = valueDescriptions;
   }
 
   @Override
   public String getType() {
-    return fTypeName;
+    return typeName;
   }
 
   @Override
   public String getUnit() {
-    return fUnit;
+    return unit;
   }
 
   @Override
   public String[] getValueDescriptions() {
-    return fValueDescriptions;
+    return valueDescriptions;
   }
   
+
   @Override
   public String toString() {
-    return "typeName:" + fTypeName + ", unit:" + fUnit + ", descriptions:" + Arrays.toString(fValueDescriptions);
-  }
+    return "SensorDescription{" +
+                "typeName='" + typeName + '\'' +
+                ", unit='" + unit + '\'' +
+                ", valueDescriptions=" + Arrays.toString(valueDescriptions) +
+                '}';
+    }
 }

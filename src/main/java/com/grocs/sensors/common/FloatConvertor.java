@@ -1,6 +1,6 @@
 package com.grocs.sensors.common;
 
-public class FloatConvertor {
+class FloatConvertor {
   final int fMultiplier;
 
   public FloatConvertor() {
