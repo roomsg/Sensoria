@@ -2,7 +2,7 @@ Sensoria
 ========
 
 ## Description
-Android application that is mainly targetted to Android developpers...  
+This is an Android application that is mainly targetted to Android developpers...  
 Have you ever been wondering about the following:
 - which (type of) sensors are available at my device ?
 - which are their values and how do they (possibly) correlate ?
@@ -16,8 +16,8 @@ Other apps in the playstore are not really helping (AFAIK), since they only seem
 
 ## Personal objectives
 Android (playground) project to explore:
-- Android development in general: app vs lib, explore API
-- (Junit) test on Android
+- Android development in general: explore Android API + tools, app vs lib/service, ...
+- JUnit (..) tests
 - Gradle and its Android plugin
 
 ### Personal Scope
@@ -32,8 +32,7 @@ Android (playground) project to explore:
 - ...
 
 ### TODOs
-- find out why suddenly the startup of the overview activities has becoming so _terribly_ slow
+- find out why suddenly the startup of the overview activities has becoming so _terribly_ slow, and fix it !
 - use TimerTask (..) iso plain sleeps for refreshing the sensor values
-- extend (basic) implementation of the sensor details activity
-- split off lib (service) and app ?
+- extend basic implementation of the sensor details activity
 - ...
