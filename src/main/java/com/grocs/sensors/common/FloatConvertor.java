@@ -1,17 +1,17 @@
 package com.grocs.sensors.common;
 
 class FloatConvertor {
-  final int fMultiplier;
+    final int fMultiplier;
 
-  public FloatConvertor() {
-    this(0);
-  }
+    public FloatConvertor() {
+        this(0);
+    }
 
-  public FloatConvertor(int precision) {
-    fMultiplier = (int) Math.pow(10, precision);
-  }
+    public FloatConvertor(int precision) {
+        fMultiplier = (int) Math.pow(10, precision);
+    }
 
-  public float doConvert(float f) {
-    return (float) Math.round(f * fMultiplier) / fMultiplier;
-  }
+    public float doConvert(float f) {
+        return (float) Math.round(f * fMultiplier) / fMultiplier;
+    }
 }

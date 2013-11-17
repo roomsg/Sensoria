@@ -4,12 +4,12 @@ import android.hardware.Sensor;
 
 public interface ISensorData {
 
-  public Sensor getSensor();
+    public Sensor getSensor();
 
-  public float[] getValues();
+    public float[] getValues();
 
-  public ISensorDescription getDescription();
+    public ISensorDescription getDescription();
 
-  public boolean isDefault();
+    public boolean isDefault();
 
 }

@@ -2,11 +2,11 @@ package com.grocs.sensors.common;
 
 public interface ISensorDescription {
 
-  String getType();
+    String getType();
 
-  String getUnit();
+    String getUnit();
 
-  String[] getValueDescriptions();
+    String[] getValueDescriptions();
 
-  final ISensorDescription UNKNOWN = SensorDescriptions.UNKNOWN;
+//  final ISensorDescription UNKNOWN = SensorDescriptions.UNKNOWN;
 }
