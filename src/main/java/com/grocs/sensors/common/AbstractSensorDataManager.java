@@ -25,7 +25,7 @@ import android.util.Log;
  * @author ladmin
  */
 public abstract class AbstractSensorDataManager implements SensorEventListener {
-    final String TAG = this.getClass().getSimpleName();
+    final String TAG = "AbstractSensorDataManager";
     // final, main members
     private final SensorManager fSM;
     private final SensorData[] fSensors;
