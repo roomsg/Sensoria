@@ -13,10 +13,11 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.grocs.sensors.common.SensorDataManager;
 import com.grocs.sensors.common.ISensorData;
 import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorUtilsInt;
-import com.grocs.sensors.common.SingleSensorDataManager;
+import com.grocs.sensors.common.SensorFilter;
 
 public class ActivityDetail extends ListActivity {
     private static final boolean TRACE = false;
@@ -32,7 +33,7 @@ public class ActivityDetail extends ListActivity {
      * listview as it is used by our ListActivity.
      */
     ListView fListView;
-    private SingleSensorDataManager fSM;
+    private SensorDataManager fSM;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -43,8 +44,8 @@ public class ActivityDetail extends ListActivity {
         // get the sensor name from the intent
         final String name = getIntent().getStringExtra(PROP_SENSOR_NAME);
         // create our model object
-        fSM = new SingleSensorDataManager(
-                (SensorManager) getSystemService(SENSOR_SERVICE), name);
+        fSM = new SensorDataManager(
+                (SensorManager) getSystemService(SENSOR_SERVICE), new SensorFilter.NameSensorFilter(name), null);
         ISensorData[] sensors = fSM.getSensors();
         ISensorData sensor = null;
         for (ISensorData sensordata : sensors) {

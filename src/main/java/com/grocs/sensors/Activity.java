@@ -21,14 +21,14 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.grocs.sensors.common.AbstractSensorDataManager;
-import com.grocs.sensors.common.AllSensorDataManager;
+import com.grocs.sensors.common.SensorDataManager;
 import com.grocs.sensors.common.ISensorData;
 import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorConstants;
 import com.grocs.sensors.common.SensorDataManagerListener;
 import com.grocs.sensors.common.SensorEntry;
 import com.grocs.sensors.common.SensorEntryComparator;
+import com.grocs.sensors.common.SensorFilter;
 import com.grocs.sensors.common.SensorUtilsInt;
 
 /**
@@ -36,10 +36,10 @@ import com.grocs.sensors.common.SensorUtilsInt;
 public class Activity extends ListActivity implements
         SensorDataManagerListener {
     private static final boolean TRACE = false;
-    private final String TAG = this.getClass().getSimpleName();
+    private final String TAG = "Activity";
     private final int MENU_PREFS = 666;
     //
-    private AbstractSensorDataManager fSM;
+    private SensorDataManager fSM;
     // List adapter
     private EntryAdapter fAdapter;
     // Activity preferences
@@ -68,15 +68,14 @@ public class Activity extends ListActivity implements
 
     @Override
     public void onCreate(Bundle bundle) {
-        Log.i(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         super.onCreate(bundle);
         // get the listview
         fListView = getListView();
         // get the prefs
         fPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         // create our model object
-        fSM = new AllSensorDataManager(
-                (SensorManager) getSystemService(SENSOR_SERVICE));
+        fSM = new SensorDataManager((SensorManager) getSystemService(SENSOR_SERVICE), new SensorFilter.AllSensorFilter(), this);
         fEntries = createEntries(fSM.getSensors());
         // create the adapter
         fAdapter = new EntryAdapter(this, fEntries);
@@ -108,7 +107,7 @@ public class Activity extends ListActivity implements
         //
         fSM.setPrecision(precision);
         // start listening
-        fSM.addListener(this);
+        fSM.start();
         // trigger a refresh to be sure all (pref) changes are applied
         fAdapter.notifyDataSetChanged();
     }
@@ -117,7 +116,7 @@ public class Activity extends ListActivity implements
     protected void onPause() {
         Log.i(TAG, "onPause");
         // stop listening
-        fSM.removeListener(this);
+        fSM.stop();
         super.onPause();
     }
 
@@ -175,7 +174,7 @@ public class Activity extends ListActivity implements
      */
     @Override
     public void onUpdate(ISensorData[] data) {
-        // Log.i(TAG, "onUpdate: " + data);
+        //Log.d(TAG, "onUpdate: " + data);
         final int first = fListView.getFirstVisiblePosition();
         final int last = fListView.getLastVisiblePosition();
         //
@@ -186,7 +185,7 @@ public class Activity extends ListActivity implements
             @Override
             public void run() {
                 for (int i = 0; i < fRefreshMatrix.length; ++i) {
-                    if (true == fRefreshMatrix[i]) {
+                    if (fRefreshMatrix[i]) {
                         final int visualIndex = i - first;
                         final View view = fListView.getChildAt(visualIndex);
                         if (null != view) {
@@ -222,8 +221,8 @@ public class Activity extends ListActivity implements
     private void updateRefreshMatrix(ISensorData[] data, int start, int stop) {
         Arrays.fill(fRefreshMatrix, false);
         for (int i = 0; i < fEntries.length; ++i) {
-            for (int j = 0; j < data.length; ++j) {
-                if (data[j].equals(fEntries[i].getSensorData())) {
+            for (ISensorData aData : data) {
+                if (aData.equals(fEntries[i].getSensorData())) {
                     if ((i >= start) && (i <= stop)) {
                         fRefreshMatrix[i] = true;
                     }
@@ -235,7 +234,7 @@ public class Activity extends ListActivity implements
 
     private void updateStrValues() {
         for (int i = 0; i < fRefreshMatrix.length; ++i) {
-            if (true == fRefreshMatrix[i]) {
+            if (fRefreshMatrix[i]) {
                 final SensorEntry entry = fAdapter.getItem(i);
                 final float[] values = entry.getSensorData().getValues();
                 for (int j = 0; j < fStringValues[i].length; ++j) {

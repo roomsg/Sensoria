@@ -15,13 +15,15 @@ import android.hardware.SensorManager;
  */
 class SensorCollector {
     final SensorManager fSM;
+    final SensorFilter filter;
     final SensorData[] fSensors;
 
     /**
      * Constructor.
      */
-    SensorCollector(final SensorManager sm) {
+    SensorCollector(final SensorManager sm, final SensorFilter filter) {
         fSM = sm;
+        this.filter = filter;
         // create our sensorArray
         fSensors = retrieveSensors();
     }
@@ -37,8 +39,13 @@ class SensorCollector {
         for (Sensor sensor : fSM.getSensorList(Sensor.TYPE_ALL)) {
             // get default sensor for the given sensor type
             final Sensor defSensor = fSM.getDefaultSensor(sensor.getType());
-            // register sensor (+ default or not)
-            sensors.add(new SensorData(sensor, defSensor == sensor));
+            // create
+            final SensorData sensorData = new SensorData(sensor, defSensor == sensor);
+            // filter
+            if (filter.filter(sensorData)) {
+                // register sensor (+ default or not)
+                sensors.add(new SensorData(sensor, defSensor == sensor));
+            }
         }
         // return result
         return sensors.toArray(new SensorData[sensors.size()]);

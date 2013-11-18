@@ -3,8 +3,6 @@ package com.grocs.sensors.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.hardware.Sensor;
@@ -24,12 +22,12 @@ import android.util.Log;
  *
  * @author ladmin
  */
-public abstract class AbstractSensorDataManager implements SensorEventListener {
-    final String TAG = "AbstractSensorDataManager";
+public class SensorDataManager implements SensorEventListener {
+    final String TAG = "SensorDataManager";
     // final, main members
-    private final SensorManager fSM;
+    private final SensorManager sm;
     private final SensorData[] fSensors;
-    private final Set<SensorDataManagerListener> fListeners;
+    private final SensorDataManagerListener listener;
     // TODO - checkout this mechanism !
     private final AtomicBoolean fStopRequest = new AtomicBoolean();
     private final float[] fTempValues;
@@ -38,17 +36,17 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
     // some class values to be constantly reused (avoiding a lot of 'new')
     private int fRefreshDelay = SensorConstants.DEF_REFRESH_RATE;
     private FloatConvertor fConvertor;
-
+    private final Object listenerMutex = new Object();
     /**
      * Constructor
      *
      * @param sm SensorManager
      */
-    public AbstractSensorDataManager(final SensorManager sm) {
-        fSM = sm;
-        fListeners = new CopyOnWriteArraySet<SensorDataManagerListener>();
+    public SensorDataManager(final SensorManager sm, SensorFilter filter, SensorDataManagerListener listener) {
+        this.sm = sm;
+        this.listener = listener;
         fConvertor = new FloatConvertor();
-        fSensors = new SensorCollector(fSM).getSensors();
+        fSensors = new SensorCollector(this.sm, filter).getSensors();
         fTempEvents = new ArrayList<SensorData>(fSensors.length);
         fTempValues = new float[SensorUtilsInt.getMaxNrOfExpectedValues()];
     }
@@ -65,29 +63,13 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
         fConvertor = new FloatConvertor(precision);
     }
 
-    public synchronized void addListener(final SensorDataManagerListener listener) {
-        boolean hadListeners = anyListeners();
-        if (!hadListeners && fListeners.add(listener)) {
-            startListening();
-            startWorkerThread();
-        }
+    public void start() {
+        startWorkerThread();
     }
 
-    public synchronized void removeListener(SensorDataManagerListener listener) {
-        fListeners.remove(listener);
-        if (!anyListeners()) {
-            stopListening();
-            stopWorkerThread();
-        }
+    public void stop() {
+        stopWorkerThread();
     }
-
-    /**
-     * Implement this filter to define which sensor(s) you want to be traced.
-     *
-     * @param data SensorData
-     * @return true if needed to follow, false if not
-     */
-    abstract boolean filter(ISensorData data);
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -106,34 +88,54 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
         }
     }
 
-    private void startListening() {
-        for (ISensorData data : fSensors) {
-            if (filter(data)) {
-                fSM.registerListener(this, data.getSensor(),
-                        SensorManager.SENSOR_DELAY_NORMAL);
+    // we're handling this async since registering listeners seemingly can take quite some time (since > 4.3 ?)
+    private void doRegisterListeners() {
+        final SensorEventListener listener = this;
+        Log.i(TAG, "doRegisterListeners-1");
+        synchronized (listenerMutex) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (ISensorData data : fSensors) {
+                        Log.i(TAG, "doRegisterListeners on " + data.getDescription());
+                        sm.registerListener(listener, data.getSensor(),
+                                SensorManager.SENSOR_DELAY_NORMAL);
+                    }
+                }
+            }).start();
+        }
+    }
+
+    // we're handling this async since unregistering listeners seemingly can take quite some time (since > 4.3 ?)
+    private void doUnregisterListeners() {
+        final SensorEventListener listener = this;
+        Log.i(TAG, "doUnregisterListeners-1");
+        synchronized (listenerMutex) {
+            synchronized (listenerMutex) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (ISensorData data : fSensors) {
+                            Log.i(TAG, "doUnregisterListeners on " + data.getDescription());
+                            sm.unregisterListener(listener, data.getSensor());
+                        }
+                    }
+                }).start();
             }
         }
-    }
-
-    private void stopListening() {
-        for (ISensorData data : fSensors) {
-            fSM.unregisterListener(this, data.getSensor());
-        }
-    }
-
-    private synchronized boolean anyListeners() {
-        return !fListeners.isEmpty();
+        Log.i(TAG, "doUnregisterListeners-2");
     }
 
     private synchronized void startWorkerThread() {
         Log.i(TAG, "startWorkerThread");
-        if (null != fWorker) {
-            return;
-        }
+        // do the processing in seperate thread
         fWorker = new Thread(new Runnable() {
             @Override
             public void run() {
                 Log.i(TAG, "start to run !");
+                // register listeners as a start
+                doRegisterListeners();
+                // start actual processing of incoming events
                 do {
                     // deliver all in one step
                     processEvents();
@@ -144,12 +146,19 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
                         e.printStackTrace();
                     }
                 } while (!fStopRequest.get());
+                // at last: unregister listeners
+                doUnregisterListeners();
                 fWorker = null;
                 fStopRequest.set(false);
                 Log.i(TAG, "stop to run !");
             }
         });
         fWorker.start();
+    }
+
+    private synchronized void stopWorkerThread() {
+        Log.i(TAG, "stopWorkerThread");
+        fStopRequest.set(true);
     }
 
     private void processEvents() {
@@ -164,17 +173,8 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
         if (!fTempEvents.isEmpty()) {
             final SensorData[] actuals = fTempEvents
                     .toArray(new SensorData[fTempEvents.size()]);
-            triggerListeners(actuals);
+            listener.onUpdate(actuals);
         }
-    }
-
-    private synchronized void stopWorkerThread() {
-        Log.i(TAG, "stopWorkerThread");
-        if (null == fWorker) {
-            return;
-        }
-        fStopRequest.set(true);
-        fWorker = null;
     }
 
     private SensorData retrieveSensor(Sensor sensor) {
@@ -186,37 +186,4 @@ public abstract class AbstractSensorDataManager implements SensorEventListener {
             valuesOut[i] = fConvertor.doConvert(valuesIn[i]);
         }
     }
-
-    private synchronized void triggerListeners(ISensorData[] actuals) {
-        // Log.i(TAG, "trigger " + actuals.length + " listeners.");
-        for (SensorDataManagerListener listener : fListeners) {
-            listener.onUpdate(actuals);
-        }
-    }
-
-    /**
-     * only usefull ico all sensor values are required when not all sensors have
-     * listeners... TODO - to evaluate/revise
-     */
-    // private void startup() {
-    // addListener(new SensorDataManagerListener() {
-    // @Override
-    // public void onUpdate(ISensorData[] datae) {
-    // boolean bOKToUnregister = true;
-    // // check if all sensors have actual values
-    // for (ISensorData data : fSensors) {
-    // // TODO - not part of the contract, yet empty array depicts
-    // // uninitialised values
-    // float[] values = data.getValues();
-    // if (values.length == 0) {
-    // bOKToUnregister = false;
-    // break;
-    // }
-    // }
-    // if (bOKToUnregister) {
-    // removeListener(this);
-    // }
-    // }
-    // });
-    // }
 }
