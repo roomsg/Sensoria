@@ -29,7 +29,7 @@ import com.grocs.sensors.common.SensorDataManagerListener;
 import com.grocs.sensors.common.SensorEntry;
 import com.grocs.sensors.common.SensorEntryComparator;
 import com.grocs.sensors.common.SensorFilter;
-import com.grocs.sensors.common.SensorUtilsInt;
+import com.grocs.sensors.common.SensorUtils;
 
 /**
  */
@@ -255,7 +255,7 @@ public class Activity extends ListActivity implements
         // add individual sensors
         for (ISensorData data : datae) {
             entries.add(new SensorEntry(data));
-            types.add(SensorUtilsInt.getDescription(data.getSensor().getType()));
+            types.add(SensorUtils.getDescription(data.getSensor().getType()));
         }
         // add sensor types (no duplicates)
         for (ISensorDescription descr : types) {

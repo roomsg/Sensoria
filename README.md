@@ -31,6 +31,5 @@ Android (playground) project to explore:
 - ...
 
 ### TODOs
-- use TimerTask (..) iso plain sleeps for refreshing the sensor values
 - extend basic implementation of the sensor details activity
 - ...

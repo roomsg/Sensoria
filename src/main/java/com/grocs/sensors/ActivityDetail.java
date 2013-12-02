@@ -16,7 +16,7 @@ import android.widget.ListView;
 import com.grocs.sensors.common.SensorDataManager;
 import com.grocs.sensors.common.ISensorData;
 import com.grocs.sensors.common.ISensorDescription;
-import com.grocs.sensors.common.SensorUtilsInt;
+import com.grocs.sensors.common.SensorUtils;
 import com.grocs.sensors.common.SensorFilter;
 
 public class ActivityDetail extends ListActivity {
@@ -71,7 +71,7 @@ public class ActivityDetail extends ListActivity {
         details.add("Name: " + sensor.getName());
         details.add("Vendor: " + sensor.getVendor());
         details.add("Version: " + sensor.getVersion());
-        final ISensorDescription description = SensorUtilsInt.getDescription(sensor
+        final ISensorDescription description = SensorUtils.getDescription(sensor
                 .getType());
         details.add("Type: " + description.getType());
         details.add("Default: " + sensorData.isDefault());
@@ -209,7 +209,7 @@ public class ActivityDetail extends ListActivity {
     // types.add(data.getSensor().getType());
     // }
     // for (Integer type : types) {
-    // entries.add(new SensorEntry1(SensorUtilsInt.getDescription(type)));
+    // entries.add(new SensorEntry1(SensorUtils.getDescription(type)));
     // }
     // return entries.toArray(new SensorEntry1[entries.size()]);
     // }
