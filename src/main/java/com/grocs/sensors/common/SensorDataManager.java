@@ -23,7 +23,8 @@ import android.util.Log;
  * @author ladmin
  */
 public class SensorDataManager implements SensorEventListener {
-    final String TAG = "SensorDataManager";
+    final static String TAG = "SensorDataManager";
+    final static int MIN_REFRESH_DELAY = 1;
     // final, main members
     private final SensorManager sm;
     private final SensorData[] fSensors;
@@ -55,7 +56,7 @@ public class SensorDataManager implements SensorEventListener {
     }
 
     public void setRefreshRate(final int delay) {
-        fRefreshDelay = Math.max(delay, 1);
+        fRefreshDelay = Math.max(delay,MIN_REFRESH_DELAY);
     }
 
     public void setPrecision(final int precision) {
@@ -64,24 +65,39 @@ public class SensorDataManager implements SensorEventListener {
 
     public synchronized void start() {
         Log.i(TAG, "start");
-        // start handling data
-        task = new DataHandler();
-        timer.schedule(task, 0, fRefreshDelay);
+        // start scheduling as quickly as possible, to improve startup responsiveness.
+        // Once all listeners are registered, we'll be falling back to the normal pace...
+        doSchedule(0);
         // register listeners
         doRegisterListeners();
     }
 
     public synchronized void stop() {
         Log.i(TAG, "stop");
-        // stop our timer(task)
-        task.cancel();
         // unregister listeners
         doUnregisterListeners();
+        // stop our timer(task)
+        task.cancel();
+        task = null;
+    }
+
+    /**
+     * (re)schedule processing
+     * @param delay interval for processing in millisec
+     */
+    private void doSchedule(final int delay) {
+        Log.i(TAG, "doSchedule(" + delay + ")");
+        if (task != null) {
+            task.cancel();
+        }
+        task = new DataHandler();
+        timer.schedule(task, 0, Math.max(delay,MIN_REFRESH_DELAY));
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         final SensorData data = retrieveSensor(event.sensor);
+        Log.d(TAG, "onSensorChanged(" + data + ")");
         if (null != data) {
             convert(event.values, fTempValues);
             data.update(fTempValues);
@@ -96,10 +112,9 @@ public class SensorDataManager implements SensorEventListener {
         }
     }
 
-    // we're handling this async since registering listeners seemingly can take quite some time (since > 4.3 ?)
+    // we're handling this async since registering listeners seemingly can take quite some time (android 4.3 ?!)
     private void doRegisterListeners() {
         final SensorEventListener listener = this;
-        Log.i(TAG, "doRegisterListeners");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -110,14 +125,15 @@ public class SensorDataManager implements SensorEventListener {
                                 SensorManager.SENSOR_DELAY_NORMAL);
                     }
                 }
+                // this is the moment to start processing at normal pace
+                doSchedule(fRefreshDelay);
             }
         }).start();
     }
 
-    // we're handling this async since unregistering listeners seemingly can take quite some time (since > 4.3 ?)
+    // we're handling this async since unregistering listeners seemingly can take quite some time (android 4.3 ?!)
     private void doUnregisterListeners() {
         final SensorEventListener listener = this;
-        Log.i(TAG, "doUnregisterListeners-1");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -129,7 +145,6 @@ public class SensorDataManager implements SensorEventListener {
                 }
             }
         }).start();
-        Log.i(TAG, "doUnregisterListeners-2");
     }
 
     private void processEvents() {
@@ -164,6 +179,7 @@ public class SensorDataManager implements SensorEventListener {
     class DataHandler extends TimerTask {
         @Override
         public void run() {
+            Log.d(TAG, "DataHandler.run(" + this.scheduledExecutionTime() + ")");
             processEvents();
         }
     }

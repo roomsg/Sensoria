@@ -103,9 +103,9 @@ public class Activity extends ListActivity implements
         // update the precision - might have changed in the meantime...
         final int precision = Integer.parseInt(fPrefs.getString(PROP_PRECISION,
                 DEF_PRECISION_STR));
-        fFormatter = new FloatFormatter(precision);
-        //
         fSM.setPrecision(precision);
+        //
+        fFormatter = new FloatFormatter(precision);
         // start listening
         fSM.start();
         // trigger a refresh to be sure all (pref) changes are applied
