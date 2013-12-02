@@ -27,12 +27,10 @@ Android (playground) project to explore:
 - Low memory footprint (yeah, I know, probably does not makes a lot of sense these days, just a habit of those early days)
 
 ### Explore (possibilities of) other interesting stuff..
-- Groovy
 - Dagger
 - ...
 
 ### TODOs
-- find out why suddenly the startup of the overview activities has becoming so _terribly_ slow, and fix it !
 - use TimerTask (..) iso plain sleeps for refreshing the sensor values
 - extend basic implementation of the sensor details activity
 - ...
