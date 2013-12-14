@@ -62,7 +62,7 @@ class SensorDescriptions {
     private interface SFD {
         ISensorDescription UNKNOWN = new SensorDescription(SSD.UNKNOWN, SUD.UNKNOWN, SVD.UNKNOWN);
         ISensorDescription ACCEL = new SensorDescription(SSD.ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
-        ISensorDescription LIN_ACCEL = new SensorDescription(SSD.LIN_ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
+//        ISensorDescription LIN_ACCEL = new SensorDescription(SSD.LIN_ACCEL, SUD.ACCEL, SVD.GEN_3AXIS);
         ISensorDescription ATEMP = new SensorDescription(SSD.ATEMP, SUD.TEMP, SVD.TEMP);
         ISensorDescription LIGHT = new SensorDescription(SSD.LIGHT, SUD.LIGHT, SVD.LIGHT);
         ISensorDescription MAGN = new SensorDescription(SSD.MAGN, SUD.MAGN, SVD.GEN_3AXIS);
@@ -86,7 +86,7 @@ class SensorDescriptions {
         String GRAV = "Gravity";
         String GYR = "Gyroscope";
         String LIGHT = "Light";
-        String LIN_ACCEL = "Linear acceleration";
+//        String LIN_ACCEL = "Linear acceleration";
         String MAGN = "Magnetic field";
         String ORIENT = "Orientation";
         String PRESS = "Pressure";
@@ -107,7 +107,7 @@ class SensorDescriptions {
         String UNKNOWN = "Unknown";
         //
         String ACCEL = "m/s2";
-        String LIN_ACCEL = ACCEL;
+//        String LIN_ACCEL = ACCEL;
         String GRAV = ACCEL;
         String GYR = "rad/s";
         String LIGHT = "lx";
@@ -117,7 +117,7 @@ class SensorDescriptions {
         String PROXIMITY = "cm";
         String ROTATION = EMPTY;
         String TEMP = "°C";
-        String ATEMP = TEMP;
+//        String ATEMP = TEMP;
         String REL_HUM = "%";
         String COUNT = "nr";
     }
