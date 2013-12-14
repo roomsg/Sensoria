@@ -1,4 +1,4 @@
-package com.grocs.sensors;
+package com.grocs.sensors.ui;
 
 import static com.grocs.sensors.common.SensorConstants.DEF_PRECISION_STR;
 import static com.grocs.sensors.common.SensorConstants.PROP_PRECISION;
@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.grocs.sensors.R;
 import com.grocs.sensors.common.ISensorData;
-import com.grocs.sensors.common.SensorEntry;
 
 public class EntryAdapter extends ArrayAdapter<SensorEntry> implements
         OnSharedPreferenceChangeListener {

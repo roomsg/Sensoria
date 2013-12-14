@@ -1,4 +1,6 @@
-package com.grocs.sensors.common;
+package com.grocs.sensors.ui;
+
+import com.grocs.sensors.ui.SensorEntry;
 
 import java.util.Comparator;
 

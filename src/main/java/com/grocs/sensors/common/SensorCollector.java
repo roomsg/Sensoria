@@ -1,53 +1,47 @@
 package com.grocs.sensors.common;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Utility class to collect all sensorData coming from the standard
- * SensorManager. Apart from simply collecting data from the sensormanager, it
- * additionally takes care of finding / registering all default sensors as well.
+ * Utility class to collect a filtered collection of sensorData from the SensorManager.
+ * Additionaly verifies if a sensor is the default sensor for its type.
+ * Note that since API 18, it seems like every sensor has been given its own type,
+ * so every sensor seems to be the default sensor for its type - not very usefull...
  *
- * @author ladmin
+ * @author roomsg
  */
 class SensorCollector {
-    final SensorManager fSM;
-    final SensorFilter filter;
-    final SensorData[] fSensors;
+    private final SensorData[] sensors;
 
     /**
      * Constructor.
      */
-    SensorCollector(final SensorManager sm, final SensorFilter filter) {
-        fSM = sm;
-        this.filter = filter;
-        // create our sensorArray
-        fSensors = retrieveSensors();
-    }
-
-    public SensorData[] getSensors() {
-        return fSensors;
-    }
-
-    public SensorData[] retrieveSensors() {
-        // create bare sensorlist
-        final Set<SensorData> sensors = new HashSet<SensorData>();
-        // first run to get all regular sensors
-        for (Sensor sensor : fSM.getSensorList(Sensor.TYPE_ALL)) {
-            // get default sensor for the given sensor type
-            final Sensor defSensor = fSM.getDefaultSensor(sensor.getType());
-            // create
-            final SensorData sensorData = new SensorData(sensor, defSensor == sensor);
-            // filter
+    SensorCollector(final SensorManager sensorManager, final SensorFilter filter) {
+        // create filtered sensorSet
+        final Set<SensorData> sensorSet = new HashSet<SensorData>();
+        for (Sensor sensor : sensorManager.getSensorList(Sensor.TYPE_ALL)) {
+            // compare with default sensor for the given type / reference equality on purpose !
+            final boolean isDefault = (sensor == sensorManager.getDefaultSensor(sensor.getType()));
+            // create sensorData
+            final SensorData sensorData = new SensorData(sensor, isDefault);
+            // register ico passing the filter
             if (filter.filter(sensorData)) {
-                // register sensor (+ default or not)
-                sensors.add(new SensorData(sensor, defSensor == sensor));
+                sensorSet.add(sensorData);
             }
         }
-        // return result
-        return sensors.toArray(new SensorData[sensors.size()]);
+        // assign to our array result
+        this.sensors = sensorSet.toArray(new SensorData[sensorSet.size()]);
+    }
+
+    /**
+     * get resulting sensors.
+     * @return filtered sensorData
+     */
+    SensorData[] getSensors() {
+        return sensors;
     }
 }

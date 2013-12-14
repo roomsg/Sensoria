@@ -2,24 +2,23 @@ package com.grocs.sensors.common;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.hardware.Sensor;
 
-public class SensorData implements ISensorData {
-    private final Sensor fSensor;
-    private final ISensorDescription fDescription;
-    private final boolean bIsDefault;
-    private final AtomicBoolean bDirty;
+class SensorData implements ISensorData {
+    private final Sensor sensor;
+    private final boolean isDefault;
+    private final ISensorDescription description;
+    private final AtomicBoolean dirty = new AtomicBoolean();;
     private final float[] fValues;
-    private int fAccuracy;
+    private int accuracy;
 
-    public SensorData(Sensor sensor, boolean defaultSensor) {
-        fSensor = sensor;
-        fDescription = SensorDescriptions.getDescription(sensor.getType());
+    SensorData(final Sensor sensor, final boolean defaultSensor) {
+        this.sensor = sensor;
+        this.isDefault = defaultSensor;
+        //
+        description = SensorDescriptions.getDescription(sensor.getType());
         // use the description to find out how many values are to be expected
-        fValues = new float[fDescription.getValueDescriptions().length];
-        bDirty = new AtomicBoolean();
-        bIsDefault = defaultSensor;
+        fValues = new float[description.getValueDescriptions().length];
     }
 
     /**
@@ -27,7 +26,7 @@ public class SensorData implements ISensorData {
      */
     @Override
     public Sensor getSensor() {
-        return fSensor;
+        return sensor;
     }
 
     /**
@@ -35,7 +34,7 @@ public class SensorData implements ISensorData {
      */
     @Override
     public ISensorDescription getDescription() {
-        return fDescription;
+        return description;
     }
 
     /**
@@ -51,39 +50,43 @@ public class SensorData implements ISensorData {
      */
     @Override
     public boolean isDefault() {
-        return bIsDefault;
+        return isDefault;
     }
 
-    public boolean getAndSetDirty(boolean dirty) {
-        return bDirty.getAndSet(dirty);
+    /**
+     * clear the dirty flag
+     * @return previous value of the dirty flag
+     */
+    boolean clearDirty() {
+        return dirty.getAndSet(false);
     }
 
     /**
      * @param values new values
      * @return true ico changes, false in the other case
      */
-    public synchronized boolean update(final float[] values) {
+    synchronized boolean update(final float[] values) {
         for (int i = 0; i < fValues.length && i < values.length; ++i) {
             if (fValues[i] != values[i]) {
                 fValues[i] = values[i];
-                bDirty.set(true);
+                dirty.set(true);
             }
         }
-        return bDirty.get();
+        return dirty.get();
     }
 
-    public synchronized boolean update(int accuracy) {
-        if (accuracy == fAccuracy) {
+    synchronized boolean update(int accuracy) {
+        if (accuracy == this.accuracy) {
             return false;
         }
-        fAccuracy = accuracy;
-        bDirty.set(true);
+        this.accuracy = accuracy;
+        dirty.set(true);
         return true;
     }
 
     @Override
     public String toString() {
-        return "SensorData [Sensor=" + fSensor.getName() + ", fValues="
+        return "SensorData [Sensor=" + sensor.getName() + ", fValues="
                 + Arrays.toString(fValues) + "]";
     }
 }

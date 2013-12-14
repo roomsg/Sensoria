@@ -152,7 +152,7 @@ public class SensorDataManager implements SensorEventListener {
         fTempEvents.clear();
         //
         for (SensorData data : fSensors) {
-            if (data.getAndSetDirty(false)) {
+            if (data.clearDirty()) {
                 fTempEvents.add(data);
             }
         }

@@ -13,44 +13,44 @@ import android.util.SparseArray;
  */
 class SensorDescriptions {
     private static final int TYPE_UNKNOWN = -2;
-    private static final SparseArray<ISensorDescription> descriptionMap = new SparseArray<ISensorDescription>();
+    private static final SparseArray<ISensorDescription> descMap = new SparseArray<ISensorDescription>();
     private static final ISensorDescription[] descriptions;
 
     static {
-        descriptionMap.put(TYPE_UNKNOWN, SFD.UNKNOWN);
+        descMap.put(TYPE_UNKNOWN, SFD.UNKNOWN);
         //
-        descriptionMap.put(TYPE_ACCELEROMETER, SFD.ACCEL);
-        descriptionMap.put(TYPE_LIGHT, SFD.LIGHT);
-        descriptionMap.put(TYPE_MAGNETIC_FIELD, SFD.MAGN);
-        descriptionMap.put(TYPE_ORIENTATION, SFD.ORIENT);
-        descriptionMap.put(TYPE_PROXIMITY, SFD.PROXIMITY);
-        descriptionMap.put(TYPE_TEMPERATURE, SFD.TEMP);
-        descriptionMap.put(TYPE_GRAVITY, SFD.GRAV);
-        descriptionMap.put(TYPE_GYROSCOPE, SFD.GYRO);
-        descriptionMap.put(TYPE_LINEAR_ACCELERATION, SFD.ACCEL);
-        descriptionMap.put(TYPE_PRESSURE, SFD.PRESS);
-        descriptionMap.put(TYPE_ROTATION_VECTOR, SFD.ROTATION);
-        descriptionMap.put(TYPE_AMBIENT_TEMPERATURE, SFD.ATEMP);
-        descriptionMap.put(TYPE_RELATIVE_HUMIDITY, SFD.REL_HUMIDITY);
+        descMap.put(TYPE_ACCELEROMETER, SFD.ACCEL);
+        descMap.put(TYPE_LIGHT, SFD.LIGHT);
+        descMap.put(TYPE_MAGNETIC_FIELD, SFD.MAGN);
+        descMap.put(TYPE_ORIENTATION, SFD.ORIENT);
+        descMap.put(TYPE_PROXIMITY, SFD.PROXIMITY);
+        descMap.put(TYPE_TEMPERATURE, SFD.TEMP);
+        descMap.put(TYPE_GRAVITY, SFD.GRAV);
+        descMap.put(TYPE_GYROSCOPE, SFD.GYRO);
+        descMap.put(TYPE_LINEAR_ACCELERATION, SFD.ACCEL);
+        descMap.put(TYPE_PRESSURE, SFD.PRESS);
+        descMap.put(TYPE_ROTATION_VECTOR, SFD.ROTATION);
+        descMap.put(TYPE_AMBIENT_TEMPERATURE, SFD.ATEMP);
+        descMap.put(TYPE_RELATIVE_HUMIDITY, SFD.REL_HUMIDITY);
         // From API-18
-        descriptionMap.put(TYPE_GAME_ROTATION_VECTOR, SFD.ROTATION);
-        descriptionMap.put(TYPE_GYROSCOPE_UNCALIBRATED, SFD.GYRO);
-        descriptionMap.put(TYPE_MAGNETIC_FIELD_UNCALIBRATED, SFD.MAGN);
-        descriptionMap.put(TYPE_SIGNIFICANT_MOTION, SFD.MOTION);
+        descMap.put(TYPE_GAME_ROTATION_VECTOR, SFD.ROTATION);
+        descMap.put(TYPE_GYROSCOPE_UNCALIBRATED, SFD.GYRO);
+        descMap.put(TYPE_MAGNETIC_FIELD_UNCALIBRATED, SFD.MAGN);
+        descMap.put(TYPE_SIGNIFICANT_MOTION, SFD.MOTION);
         // From API-19
-        descriptionMap.put(TYPE_GEOMAGNETIC_ROTATION_VECTOR, SFD.ROTATION);
-        descriptionMap.put(TYPE_STEP_COUNTER, SFD.STEP_NUMBER);
-        descriptionMap.put(TYPE_STEP_DETECTOR, SFD.STEP_DETECT);
+        descMap.put(TYPE_GEOMAGNETIC_ROTATION_VECTOR, SFD.ROTATION);
+        descMap.put(TYPE_STEP_COUNTER, SFD.STEP_NUMBER);
+        descMap.put(TYPE_STEP_DETECTOR, SFD.STEP_DETECT);
 
-        Set<ISensorDescription> descs = new HashSet<ISensorDescription>();
-        for (int i = 0; i < descriptionMap.size(); ++i) {
-            descs.add(descriptionMap.valueAt(i));
+        Set<ISensorDescription> descSet = new HashSet<ISensorDescription>();
+        for (int i = 0; i < descMap.size(); ++i) {
+            descSet.add(descMap.valueAt(i));
         }
-        descriptions = descs.toArray(new ISensorDescription[descs.size()]);
+        descriptions = descSet.toArray(new ISensorDescription[descSet.size()]);
     }
 
     public static ISensorDescription getDescription(final int type) {
-        final ISensorDescription res = descriptionMap.get(type);
+        final ISensorDescription res = descMap.get(type);
         return (null != res ? res : SFD.UNKNOWN);
     }
 

@@ -4,6 +4,9 @@ import java.util.Collection;
 
 import android.hardware.Sensor;
 
+/**
+ * Utility class collection some util fucntions for Sensor / SensorData
+ */
 public class SensorUtils {
 
     /**
@@ -46,6 +49,9 @@ public class SensorUtils {
         return maxNr;
     }
 
+    /**
+     * private constructor for utility class.
+     */
     private SensorUtils() {
     }
 }

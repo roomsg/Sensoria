@@ -10,7 +10,7 @@
         android:theme="@android:style/Theme.Holo"
         tools:ignore="NewApi" >
         <activity
-            android:name=".Activity"
+            android:name=".ui.Activity"
             android:label="@string/title_activity_overview" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,11 +18,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.grocs.sensors.ActivityDetail"
+            android:name=".ui.ActivityDetail"
             android:label="@string/title_activity_sensor_detail" >
         </activity>
         <activity
-            android:name="com.grocs.sensors.SensorPreferenceActivity"
+            android:name=".ui.SensorPreferenceActivity"
             android:label="@string/title_activity_overview" >
         </activity>
     </application>

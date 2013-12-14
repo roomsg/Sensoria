@@ -1,4 +1,7 @@
-package com.grocs.sensors.common;
+package com.grocs.sensors.ui;
+
+import com.grocs.sensors.common.ISensorData;
+import com.grocs.sensors.common.ISensorDescription;
 
 public class SensorEntry {
     private final ISensorData fData;

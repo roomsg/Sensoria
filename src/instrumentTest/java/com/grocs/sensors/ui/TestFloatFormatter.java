@@ -1,4 +1,6 @@
-package com.grocs.sensors;
+package com.grocs.sensors.ui;
+
+import com.grocs.sensors.ui.FloatFormatter;
 
 import junit.framework.TestCase;
 

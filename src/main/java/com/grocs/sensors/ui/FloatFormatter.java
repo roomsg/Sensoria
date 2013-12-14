@@ -1,4 +1,4 @@
-package com.grocs.sensors;
+package com.grocs.sensors.ui;
 
 public class FloatFormatter {
     private final String fFormatString;

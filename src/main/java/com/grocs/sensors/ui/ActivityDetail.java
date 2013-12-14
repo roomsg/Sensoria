@@ -1,4 +1,4 @@
-package com.grocs.sensors;
+package com.grocs.sensors.ui;
 
 import static com.grocs.sensors.common.SensorConstants.PROP_SENSOR_NAME;
 
@@ -74,6 +74,7 @@ public class ActivityDetail extends ListActivity {
         final ISensorDescription description = SensorUtils.getDescription(sensor
                 .getType());
         details.add("Type: " + description.getType());
+        details.add("RawType: " + String.valueOf(sensor.getType()));
         details.add("Default: " + sensorData.isDefault());
         details.add("Unit: " + description.getUnit());
         // description.getValueDescriptions()

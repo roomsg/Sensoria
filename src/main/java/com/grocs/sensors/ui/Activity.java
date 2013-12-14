@@ -1,4 +1,4 @@
-package com.grocs.sensors;
+package com.grocs.sensors.ui;
 
 import static com.grocs.sensors.common.SensorConstants.DEF_PRECISION_STR;
 import static com.grocs.sensors.common.SensorConstants.PROP_PRECISION;
@@ -21,13 +21,12 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.grocs.sensors.R;
 import com.grocs.sensors.common.SensorDataManager;
 import com.grocs.sensors.common.ISensorData;
 import com.grocs.sensors.common.ISensorDescription;
 import com.grocs.sensors.common.SensorConstants;
 import com.grocs.sensors.common.SensorDataManagerListener;
-import com.grocs.sensors.common.SensorEntry;
-import com.grocs.sensors.common.SensorEntryComparator;
 import com.grocs.sensors.common.SensorFilter;
 import com.grocs.sensors.common.SensorUtils;
 
