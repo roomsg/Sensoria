@@ -1,6 +1,10 @@
 Sensoria
 ========
 
+## Build
+This project is using the gradle wrapper, so no need to install/download any gradle version, the wrapper takes care of it all.
+Just type: "./gradlew(.bat) clean build"
+
 ## Description
 This is an Android application that is mainly targetted to Android developpers...  
 Have you ever been wondering about the following:
